@@ -7,32 +7,32 @@ function boardMethods:getPiece()
 end
 
 function boardMethods:draw()
-   love.graphics.line(150,50, 650,50)
-   love.graphics.line(150,50, 150,550)
-   love.graphics.line(650,50, 650,550)
-   love.graphics.line(150,550, 650,550)
+   -- draw board 480x480
+   -- offset by 160 on x-axis and 60
+   love.graphics.line(160,60, 640,60)
+   love.graphics.line(160,60, 160,540)
+   love.graphics.line(640,60, 640,540)
+   love.graphics.line(160,540, 640,540)
 
-   for i = 150,650,62.5 do
-      love.graphics.line(i,50, i,550)
+   for i = 160,640,60 do
+      love.graphics.line(i,60, i,540)
    end
-   for i = 50,550,62.5 do
-      love.graphics.line(150,i, 650,i)
+   for i = 60,540,60 do
+      love.graphics.line(160,i, 640,i)
    end
 
-   --[[
    local i = 1
    local j = 1
-   for y = 50,550,62.5 do
-      for x = 150,650,62.5 do
+   for y = 60,480,60 do
+      for x = 160,580,60 do
 
          if (i % 2 == 0 and j % 2 ~= 0) or (i % 2 ~= 0 and j % 2 == 0) then
-            love.graphics.polygon('fill', x,y, x+62.5,y, x,y+62.5, x+62.5,y+62.5)
+            love.graphics.rectangle('fill', x, y, 60, 60)
          end
          i = i + 1
       end
       j = j + 1
    end
-   --]]
 
 end
 
