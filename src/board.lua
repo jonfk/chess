@@ -1,11 +1,20 @@
 
 local board = {}
 
+local piece = require 'piece'
 local inspect = require 'vendor.inspect'
 
 local boardMethods = {}
 
-function boardMethods:getPiece()
+function boardMethods:getPiece(x,y)
+   return self.grid[y][x]
+end
+
+function boardMethods:placePiece(pie, x, y)
+   if not piece.isPiece(pie) then
+      error("Invalid argument to placePiece: "..pie)
+   end
+   self.grid[y][x] = pie
 end
 
 function boardMethods:draw()
@@ -39,11 +48,49 @@ function boardMethods:draw()
 end
 
 function boardMethods:init()
+   initialGrid = {
+      ["A8"] = piece.BlackRook,
+      ["B8"] = piece.BlackKnight,
+      ["C8"] = piece.BlackBishop,
+      ["D8"]= piece.BlackQueen,
+      ["E8"]= piece.BlackKing,
+      ["F8"]= piece.BlackBishop,
+      ["G8"]= piece.BlackKnight,
+      ["H8"]= piece.BlackRook,
+      ["A7"]= piece.BlackPawn,
+      ["B7"]= piece.BlackPawn,
+      ["C7"]= piece.BlackPawn,
+      ["D7"]= piece.BlackPawn,
+      ["E7"]= piece.BlackPawn,
+      ["F7"]= piece.BlackPawn,
+      ["G7"]= piece.BlackPawn,
+      ["H7"]= piece.BlackPawn,
+      ["A1"]= piece.WhiteRook,
+      ["B1"]= piece.WhiteKnight,
+      ["C1"]= piece.WhiteBishop,
+      ["D1"]= piece.WhiteQueen,
+      ["E1"]= piece.WhiteKing,
+      ["F1"]= piece.WhiteBishop,
+      ["G1"]= piece.WhiteKnight,
+      ["H1"]= piece.WhiteRook,
+      ["A2"]= piece.WhitePawn,
+      ["B2"]= piece.WhitePawn,
+      ["C2"]= piece.WhitePawn,
+      ["D2"]= piece.WhitePawn,
+      ["E2"]= piece.WhitePawn,
+      ["F2"]= piece.WhitePawn,
+      ["G2"]= piece.WhitePawn,
+      ["H2"]= piece.WhitePawn
+   }
    for y = 1,8 do
       self.grid[y] = {}
       for x = 1,8 do
          self.grid[y][x] = 0
       end
+   end
+   for k, pie in pairs(initialGrid) do
+      local x,y = board.toXY(k)
+      self:placePiece(pie, x,y)
    end
 end
 
@@ -95,13 +142,13 @@ function board.toXY(algN)
    elseif letter >= 97 and letter <= 104 then
       x = letter - 96
    else
-      error("Invalid algebraic chess notation: "..algN)
+      error("Invalid algebraic chess notationl: "..algN)
    end
 
    local y = 0
-   local num = algN:byte(2)
+   local num = tonumber(algN:sub(2))
    if num < 1 or num > 8 then
-      error("Invalid algebraic chess notation: "..algN)
+      error("Invalid algebraic chess notationn: "..algN)
    else
       y = 9 - num
    end
