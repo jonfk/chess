@@ -1,0 +1,11 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/julienschmidt/httprouter",
+			"repository": "https://github.com/julienschmidt/httprouter",
+			"revision": "8c199fb6259ffc1af525cc3ad52ee60ba8359669",
+			"branch": "master"
+		}
+	]
+}
