@@ -20,5 +20,6 @@ end
 
 local pieceMethods = {}
 
+local Piece = {__index = pieceMethods}
 
 return piece

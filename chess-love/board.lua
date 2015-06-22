@@ -18,8 +18,9 @@ function boardMethods:placePiece(pie, x, y)
 end
 
 function boardMethods:draw()
+   love.graphics.setColor(255, 255, 255)
    -- draw board 480x480
-   -- offset by 160 on x-axis and 60
+   -- offset by 160 on x-axis and 60 on y-axis
    love.graphics.line(160,60, 640,60)
    love.graphics.line(160,60, 160,540)
    love.graphics.line(640,60, 640,540)
@@ -43,6 +44,17 @@ function boardMethods:draw()
          i = i + 1
       end
       j = j + 1
+   end
+
+   -- Draw pieces
+   for y = 1,8 do
+      for x = 1,8 do
+         if self.grid[y][x] ~= 0 then
+            local xP, yP = board.gridToPixels(x, y)
+            love.graphics.setColor(255, 0, 0)
+            love.graphics.print(self.grid[y][x], xP, yP)
+         end
+      end
    end
 
 end
@@ -106,6 +118,17 @@ function board.new()
    b:init()
    return b
 end
+
+
+-- Grid layout Helpers
+
+function board.gridToPixels(x,y)
+   local xPixel = 100 + (x * 60)
+   local yPixel = (y * 60)
+   return xPixel, yPixel
+end
+
+-- Algebriac Chess Notation to Grid Layout Helpers
 
 -- a8 stands for 1,1
 -- h1 stands for 8,8
