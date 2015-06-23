@@ -3,6 +3,7 @@ local board = {}
 
 local piece = require 'piece'
 local inspect = require 'vendor.inspect'
+local sprites = require 'sprites'
 
 local boardMethods = {}
 
@@ -39,6 +40,10 @@ function boardMethods:draw()
       for x = 160,580,60 do
 
          if (i % 2 == 0 and j % 2 ~= 0) or (i % 2 ~= 0 and j % 2 == 0) then
+            love.graphics.setColor(255, 255, 255,255)
+            love.graphics.rectangle('fill', x, y, 60, 60)
+         else
+            love.graphics.setColor(60, 60, 60)
             love.graphics.rectangle('fill', x, y, 60, 60)
          end
          i = i + 1
@@ -53,6 +58,7 @@ function boardMethods:draw()
             local xP, yP = board.gridToPixels(x, y)
             love.graphics.setColor(255, 0, 0)
             love.graphics.print(self.grid[y][x], xP, yP)
+            self.spriteSheet:draw(self.grid[y][x], xP, yP)
          end
       end
    end
@@ -113,8 +119,8 @@ end
 
 local Board = {__index = boardMethods}
 
-function board.new()
-   local b =  setmetatable({grid = {}}, Board)
+function board.new(sheet)
+   local b =  setmetatable({spriteSheet = sheet, grid = {}}, Board)
    b:init()
    return b
 end
