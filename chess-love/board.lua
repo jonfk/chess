@@ -18,6 +18,17 @@ function boardMethods:placePiece(pie, x, y)
    self.grid[y][x] = pie
 end
 
+-- move piece from x1,y1 to x2,y2
+function boardMethods:movePiece(x1,y1, x2,y2)
+   if board.isValidGridPos(x1,y1) and board.isValidGridPos(x2,y2) then
+      if self.grid[y1][x1] ~= 0 then
+         print("moving piece "..x1..","..y1.." to "..x2..","..y2)
+         self.grid[y2][x2] = self.grid[y1][x1]
+         self.grid[y1][x1] = 0
+      end
+   end
+end
+
 function boardMethods:draw()
    love.graphics.setColor(255, 255, 255)
    -- draw board 480x480
@@ -128,10 +139,24 @@ end
 
 -- Grid layout Helpers
 
+function board.isValidGridPos(x,y)
+   return x > 0 and x < 9 and y > 0 and y < 9
+end
+
 function board.gridToPixels(x,y)
    local xPixel = 100 + (x * 60)
    local yPixel = (y * 60)
    return xPixel, yPixel
+end
+
+function board.pixelsToGrid(x,y)
+   if x < 160 or x > 640 or y < 60 or y > 540 then
+      -- outside of grid
+      return 0,0
+   end
+   local xG = math.floor((x - 160)/60) + 1
+   local yG = math.floor((y - 60)/60) + 1
+   return xG, yG
 end
 
 -- Algebriac Chess Notation to Grid Layout Helpers
