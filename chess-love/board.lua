@@ -124,7 +124,9 @@ function boardMethods:init()
 end
 
 function boardMethods:debugPrint()
-   print(inspect(self.grid))
+   for i, row  in ipairs(self.grid) do
+      print(inspect(self.grid[i]))
+   end
 end
 
 
