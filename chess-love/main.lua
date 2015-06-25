@@ -9,7 +9,8 @@ local selectedX, selectedY = 0,0
 function love.load()
    spriteSheet = love.graphics.newImage("assets/Chess_Pieces_Sprite.svg.png")
    sheet = sprites.new(spriteSheet)
-   chessboard = board.new(sheet)
+   width, height = love.graphics.getDimensions()
+   chessboard = board.new(sheet, width, height)
    chessboard:debugPrint()
 end
 
@@ -34,10 +35,16 @@ function love.mousepressed(x, y, button)
       elseif selectedX ~= xG or selectedY ~= yG then
          --print("move")
          chessboard:movePiece(selectedX, selectedY, xG,yG)
-         chessboard:debugPrint()
          selectedX, selectedY = 0,0
       elseif selectedX == xG and selectedY == yG then
          selectedX, selectedY = 0,0
       end
    end
+end
+
+function love.resize(w,h)
+   print("window resize w,h: "..w..","..h)
+   chessboard.windowWidth = w
+   chessboard.windowHeight = h
+   chessboard:calculateBoardSizes()
 end

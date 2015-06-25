@@ -7,6 +7,16 @@ local sprites = require 'sprites'
 
 local boardMethods = {}
 
+-- by default
+-- draw board 480x480
+-- offset by 160 on x-axis and 60 on y-axis
+local gridSize, offsetX, offsetY, squareSize = 480,160,60,60
+
+-- sprite scale factor
+-- original sprite sheet size = 2000x667
+-- sprite = 333.5x333.5
+local scaleFactor = 0.18
+
 function boardMethods:getPiece(x,y)
    return self.grid[y][x]
 end
@@ -30,32 +40,32 @@ function boardMethods:movePiece(x1,y1, x2,y2)
 end
 
 function boardMethods:draw()
+   love.graphics.clear()
    love.graphics.setColor(255, 255, 255)
-   -- draw board 480x480
-   -- offset by 160 on x-axis and 60 on y-axis
-   love.graphics.line(160,60, 640,60)
-   love.graphics.line(160,60, 160,540)
-   love.graphics.line(640,60, 640,540)
-   love.graphics.line(160,540, 640,540)
+   -- draw grid
+   love.graphics.line(offsetX,offsetY, offsetX + gridSize,offsetY)
+   love.graphics.line(offsetX,offsetY, offsetX,offsetY + gridSize)
+   love.graphics.line(offsetX + gridSize,offsetY, offsetX + gridSize,offsetY + gridSize)
+   love.graphics.line(offsetX,offsetY + gridSize, offsetX + gridSize,offsetY + gridSize)
 
-   for i = 160,640,60 do
-      love.graphics.line(i,60, i,540)
+   for i = offsetX,offsetX+gridSize,squareSize do
+      love.graphics.line(i,offsetY, i,offsetY+gridSize)
    end
-   for i = 60,540,60 do
-      love.graphics.line(160,i, 640,i)
+   for i = offsetY,offsetY+gridSize,squareSize do
+      love.graphics.line(offsetX,i, offsetX+gridSize,i)
    end
 
    local i = 1
    local j = 1
-   for y = 60,480,60 do
-      for x = 160,580,60 do
+   for y = offsetY, offsetY+gridSize-squareSize, squareSize do
+      for x = offsetX, offsetX+gridSize-squareSize, squareSize do
 
          if (i % 2 == 0 and j % 2 ~= 0) or (i % 2 ~= 0 and j % 2 == 0) then
             love.graphics.setColor(255, 255, 255,255)
-            love.graphics.rectangle('fill', x, y, 60, 60)
+            love.graphics.rectangle('fill', x, y, squareSize, squareSize)
          else
             love.graphics.setColor(60, 60, 60)
-            love.graphics.rectangle('fill', x, y, 60, 60)
+            love.graphics.rectangle('fill', x, y, squareSize, squareSize)
          end
          i = i + 1
       end
@@ -69,11 +79,31 @@ function boardMethods:draw()
             local xP, yP = board.gridToPixels(x, y)
             love.graphics.setColor(255, 0, 0)
             love.graphics.print(self.grid[y][x], xP, yP)
-            self.spriteSheet:draw(self.grid[y][x], xP, yP)
+            self.spriteSheet:draw(self.grid[y][x], xP, yP, scaleFactor)
          end
       end
    end
+end
 
+-- to be called when windowWidth and windowHeight are initialized
+function boardMethods:calculateBoardSizes()
+   local minSize = min(self.windowWidth, self.windowHeight)
+   print("min "..minSize)
+   for a = minSize,0,-1 do
+      print("a: "..a)
+      if a % 8 == 0 then
+         gridSize = a
+         break
+      end
+   end
+   offsetX = (self.windowWidth - gridSize) / 2
+   offsetY = (self.windowHeight - gridSize) / 2
+   squareSize = gridSize / 8
+   print("Calculating Board Size from window size change")
+   print("offsets x,y: "..offsetX..","..offsetY)
+   print("sizes: grid: "..gridSize.."; square: "..squareSize)
+   -- calculate scale factor
+   scaleFactor = (100 / (333 / squareSize)) / 100
 end
 
 function boardMethods:init()
@@ -132,9 +162,15 @@ end
 
 local Board = {__index = boardMethods}
 
-function board.new(sheet)
-   local b =  setmetatable({spriteSheet = sheet, grid = {}}, Board)
+function board.new(sheet, windowWidth, windowHeight)
+   local b =  setmetatable({
+         spriteSheet = sheet,
+         windowHeight = windowHeight,
+         windowWidth = windowWidth,
+         grid = {}
+                           }, Board)
    b:init()
+   b:calculateBoardSizes()
    return b
 end
 
@@ -146,18 +182,18 @@ function board.isValidGridPos(x,y)
 end
 
 function board.gridToPixels(x,y)
-   local xPixel = 100 + (x * 60)
-   local yPixel = (y * 60)
+   local xPixel = (offsetX - squareSize) + (x * squareSize)
+   local yPixel = (offsetY - squareSize) + (y * squareSize)
    return xPixel, yPixel
 end
 
 function board.pixelsToGrid(x,y)
-   if x < 160 or x > 640 or y < 60 or y > 540 then
+   if x < offsetX or x > (offsetX + gridSize) or y < offsetY or y > (offsetY + gridSize) then
       -- outside of grid
       return 0,0
    end
-   local xG = math.floor((x - 160)/60) + 1
-   local yG = math.floor((y - 60)/60) + 1
+   local xG = math.floor((x - offsetX)/squareSize) + 1
+   local yG = math.floor((y - offsetY)/squareSize) + 1
    return xG, yG
 end
 
@@ -214,6 +250,14 @@ function board.toXY(algN)
       error("Internal error, non-exhaustive matching")
    end
    return x,y
+end
+
+function min(x, y)
+   if x > y then
+      return y
+   else
+      return x
+   end
 end
 
 return board

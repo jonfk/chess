@@ -5,7 +5,7 @@ local piece = require 'piece'
 
 local spritesMethods = {}
 
-function spritesMethods:draw(pieceType, x, y)
+function spritesMethods:draw(pieceType, x, y, scaleFactor)
    local quad
    if pieceType == piece.WhiteKing then
       quad = love.graphics.newQuad(0, 0, 333.3, 333.5, self.image:getDimensions())
@@ -33,7 +33,7 @@ function spritesMethods:draw(pieceType, x, y)
       quad = love.graphics.newQuad(1666.6, 333.3, 333.3, 333.5, self.image:getDimensions())
    end
    love.graphics.setColor(255, 255, 255)
-   love.graphics.draw(self.image ,quad ,x,y ,0, 0.18,0.18)
+   love.graphics.draw(self.image ,quad ,x,y ,0, scaleFactor,scaleFactor)
 end
 
 local Sprites = {__index = spritesMethods}
