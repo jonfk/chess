@@ -23,7 +23,7 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
-   if button == "l" then
+   if button == 1 then
       --print("pressed: "..x..", "..y)
       xG, yG = board.pixelsToGrid(x,y)
       --print("Grid: "..xG..", "..yG)
